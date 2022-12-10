@@ -83,9 +83,9 @@ internal class BatchedQuery: IBatchedQuery, IBatchEvents
         foreach (var type in _documentTypes.Distinct())
             await _parent.Database.EnsureStorageExistsAsync(type, token).ConfigureAwait(false);
 
-        var command = _parent.BuildCommand(_items.Select(x => x.Handler));
+        var batch = _parent.BuildBatch(_items.Select(x => x.Handler));
 
-        await using var reader = await _parent.ExecuteReaderAsync(command, token).ConfigureAwait(false);
+        await using var reader = await _parent.ExecuteReaderAsync(batch, token).ConfigureAwait(false);
         await _items[0].ReadAsync(reader, _parent, token).ConfigureAwait(false);
 
         var others = _items.Skip(1).ToArray();
@@ -112,10 +112,9 @@ internal class BatchedQuery: IBatchedQuery, IBatchEvents
 
         foreach (var type in _documentTypes.Distinct()) _parent.Database.EnsureStorageExists(type);
 
-        var command = _parent.BuildCommand(_items.Select(x => x.Handler));
+        var batch = _parent.BuildBatch(_items.Select(x => x.Handler));
 
-
-        using var reader = _parent.ExecuteReader(command);
+        using var reader = _parent.ExecuteReader(batch);
         _items[0].Read(reader, _parent);
 
         foreach (var item in _items.Skip(1))

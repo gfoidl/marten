@@ -48,7 +48,16 @@ public class Bug_1758_creating_stream_runs_extra_selects_and_deletes : BugIntegr
         }
 
         public void LogSuccess(NpgsqlCommand command) => CommandTexts.Add(command.CommandText);
+        public void LogSuccess(NpgsqlBatch batch)
+        {
+            // TODO
+        }
+
         public void LogFailure(NpgsqlCommand command, Exception ex) => CommandTexts.Add(command.CommandText);
+        public void LogFailure(NpgsqlBatch batch, Exception ex)
+        {
+            // TODO
+        }
 
         public void RecordSavedChanges(IDocumentSession session, IChangeSet commit)
         {
@@ -58,6 +67,10 @@ public class Bug_1758_creating_stream_runs_extra_selects_and_deletes : BugIntegr
         public IChangeSet LastCommit { get; set; }
 
         public void OnBeforeExecute(NpgsqlCommand command)
+        {
+        }
+
+        public void OnBeforeExecute(NpgsqlBatch batch)
         {
         }
     }

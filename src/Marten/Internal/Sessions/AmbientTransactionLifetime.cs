@@ -61,11 +61,25 @@ internal class AmbientTransactionLifetime: IConnectionLifetime
         command.CommandTimeout = CommandTimeout;
     }
 
+    public void Apply(NpgsqlBatch batch)
+    {
+        BeginTransaction();
+        batch.Connection = Connection;
+        batch.Timeout = CommandTimeout;
+    }
+
     public async Task ApplyAsync(NpgsqlCommand command, CancellationToken token)
     {
         await BeginTransactionAsync(token).ConfigureAwait(false);
         command.Connection = Connection;
         command.CommandTimeout = CommandTimeout;
+    }
+
+    public async Task ApplyAsync(NpgsqlBatch batch, CancellationToken token)
+    {
+        await BeginTransactionAsync(token).ConfigureAwait(false);
+        batch.Connection = Connection;
+        batch.Timeout = CommandTimeout;
     }
 
     public void Commit()

@@ -40,11 +40,24 @@ public interface IMartenSessionLogger
     void LogSuccess(NpgsqlCommand command);
 
     /// <summary>
+    ///     Log a batch that executed successfully
+    /// </summary>
+    /// <param name="batch"></param>
+    void LogSuccess(NpgsqlBatch batch);
+
+    /// <summary>
     ///     Log a command that failed
     /// </summary>
     /// <param name="command"></param>
     /// <param name="ex"></param>
     void LogFailure(NpgsqlCommand command, Exception ex);
+
+    /// <summary>
+    ///     Log a command that failed
+    /// </summary>
+    /// <param name="batch"></param>
+    /// <param name="ex"></param>
+    void LogFailure(NpgsqlBatch batch, Exception ex);
 
     /// <summary>
     ///     Called immediately after committing an IDocumentSession
@@ -61,6 +74,13 @@ public interface IMartenSessionLogger
     /// </summary>
     /// <param name="command"></param>
     public void OnBeforeExecute(NpgsqlCommand command);
+
+    /// <summary>
+    ///     Called just before a batch is to be executed. Use this to create
+    ///     performance logging of Marten operations
+    /// </summary>
+    /// <param name="batch"></param>
+    public void OnBeforeExecute(NpgsqlBatch batch);
 }
 
 #endregion
@@ -90,6 +110,11 @@ public class ConsoleMartenLogger: IMartenLogger, IMartenSessionLogger
             Console.WriteLine($"  {p.ParameterName}: {p.Value}");
     }
 
+    public void LogSuccess(NpgsqlBatch batch)
+    {
+        // TODO
+    }
+
     public void LogFailure(NpgsqlCommand command, Exception ex)
     {
         _stopwatch?.Stop();
@@ -101,6 +126,11 @@ public class ConsoleMartenLogger: IMartenLogger, IMartenSessionLogger
         Console.WriteLine(ex);
     }
 
+    public void LogFailure(NpgsqlBatch batch, Exception ex)
+    {
+        // TODO
+    }
+
     public void RecordSavedChanges(IDocumentSession session, IChangeSet commit)
     {
         _stopwatch?.Stop();
@@ -110,10 +140,12 @@ public class ConsoleMartenLogger: IMartenLogger, IMartenSessionLogger
             $"Persisted {lastCommit.Updated.Count()} updates in {_stopwatch?.ElapsedMilliseconds ?? 0} ms, {lastCommit.Inserted.Count()} inserts, and {lastCommit.Deleted.Count()} deletions");
     }
 
-    public void OnBeforeExecute(NpgsqlCommand command)
+    public void OnBeforeExecute(NpgsqlCommand command) => OnBeforeExecute();
+    public void OnBeforeExecute(NpgsqlBatch batch) => OnBeforeExecute();
+
+    private void OnBeforeExecute()
     {
-        _stopwatch = new Stopwatch();
-        _stopwatch.Start();
+        _stopwatch = Stopwatch.StartNew();
     }
 }
 

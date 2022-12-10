@@ -46,6 +46,16 @@ internal static class MartenExceptionTransformer
         _transforms.TransformAndThrow(exception);
     }
 
+    internal static void WrapAndThrow(NpgsqlBatch batch, Exception exception)
+    {
+        if (batch != null)
+        {
+            exception.Data[nameof(NpgsqlBatch)] = batch;
+        }
+
+        _transforms.TransformAndThrow(exception);
+    }
+
     internal static void WrapAndThrow(Exception exception)
     {
         _transforms.TransformAndThrow(exception);

@@ -45,6 +45,11 @@ internal class DefaultMartenLogger: IMartenLogger, IMartenSessionLogger
         }
     }
 
+    public void LogSuccess(NpgsqlBatch batch)
+    {
+        // TODO
+    }
+
     public void LogFailure(NpgsqlCommand command, Exception ex)
     {
         _stopwatch?.Stop();
@@ -54,6 +59,11 @@ internal class DefaultMartenLogger: IMartenLogger, IMartenSessionLogger
             .Select(p => $"  {p.ParameterName}: {p.Value}")
             .Join(Environment.NewLine);
         _logger.LogError(ex, message, command.CommandText, parameters);
+    }
+
+    public void LogFailure(NpgsqlBatch batch, Exception ex)
+    {
+        // TODO
     }
 
     public void RecordSavedChanges(IDocumentSession session, IChangeSet commit)
@@ -70,12 +80,15 @@ internal class DefaultMartenLogger: IMartenLogger, IMartenSessionLogger
         }
     }
 
-    public void OnBeforeExecute(NpgsqlCommand command)
+    public void OnBeforeExecute(NpgsqlCommand command) => OnBeforeExecute();
+
+    public void OnBeforeExecute(NpgsqlBatch batch) => OnBeforeExecute();
+
+    private void OnBeforeExecute()
     {
         if (_logger.IsEnabled(LogLevel.Debug))
         {
-            _stopwatch = new Stopwatch();
-            _stopwatch.Start();
+            _stopwatch = Stopwatch.StartNew();
         }
     }
 }

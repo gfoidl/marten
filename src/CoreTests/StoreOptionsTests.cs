@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Linq;
 using JasperFx.CodeGeneration;
 using Marten;
@@ -127,15 +127,30 @@ public class StoreOptionsTests
             OnBeforeExecuted++;
         }
 
+        public void OnBeforeExecute(NpgsqlBatch batch)
+        {
+            OnBeforeExecuted++;
+        }
+
         public void LogSuccess(NpgsqlCommand command)
         {
             LastCommand = command;
+        }
+
+        public void LogSuccess(NpgsqlBatch batch)
+        {
+            // TODO
         }
 
         public void LogFailure(NpgsqlCommand command, Exception ex)
         {
             LastCommand = command;
             LastException = ex;
+        }
+
+        public void LogFailure(NpgsqlBatch batch, Exception ex)
+        {
+            // TODO
         }
     }
 

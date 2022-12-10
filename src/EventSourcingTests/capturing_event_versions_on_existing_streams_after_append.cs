@@ -19,7 +19,15 @@ public class capturing_event_versions_on_existing_streams_after_append: Integrat
         {
         }
 
+        public void LogSuccess(NpgsqlBatch batch)
+        {
+        }
+
         public void LogFailure(NpgsqlCommand command, Exception ex)
+        {
+        }
+
+        public void LogFailure(NpgsqlBatch batch, Exception ex)
         {
         }
 
@@ -30,7 +38,10 @@ public class capturing_event_versions_on_existing_streams_after_append: Integrat
 
         public void OnBeforeExecute(NpgsqlCommand command)
         {
+        }
 
+        public void OnBeforeExecute(NpgsqlBatch batch)
+        {
         }
 
         public IChangeSet LastCommit { get; set; }

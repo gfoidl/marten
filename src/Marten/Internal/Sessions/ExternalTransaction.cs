@@ -37,11 +37,27 @@ internal class ExternalTransaction: IConnectionLifetime
         command.CommandTimeout = CommandTimeout;
     }
 
+    public void Apply(NpgsqlBatch batch)
+    {
+        batch.Connection = Connection;
+        batch.Transaction = Transaction;
+        batch.Timeout = CommandTimeout;
+    }
+
     public Task ApplyAsync(NpgsqlCommand command, CancellationToken token)
     {
         command.Connection = Connection;
         command.Transaction = Transaction;
         command.CommandTimeout = CommandTimeout;
+
+        return Task.CompletedTask;
+    }
+
+    public Task ApplyAsync(NpgsqlBatch batch, CancellationToken token)
+    {
+        batch.Connection = Connection;
+        batch.Transaction = Transaction;
+        batch.Timeout = CommandTimeout;
 
         return Task.CompletedTask;
     }

@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Diagnostics;
 using System.Linq;
 using Marten.Services;
@@ -49,6 +49,11 @@ namespace Marten.Testing.Harness
             }
         }
 
+        public void LogSuccess(NpgsqlBatch batch)
+        {
+            // TODO
+        }
+
         public void LogFailure(NpgsqlCommand command, Exception ex)
         {
             _output.WriteLine("Postgresql command failed!");
@@ -60,6 +65,11 @@ namespace Marten.Testing.Harness
             _output.WriteLine(ex.ToString());
         }
 
+        public void LogFailure(NpgsqlBatch batch, Exception ex)
+        {
+            // TODO
+        }
+
         public void RecordSavedChanges(IDocumentSession session, IChangeSet commit)
         {
             var lastCommit = commit;
@@ -68,6 +78,11 @@ namespace Marten.Testing.Harness
         }
 
         public void OnBeforeExecute(NpgsqlCommand command)
+        {
+
+        }
+
+        public void OnBeforeExecute(NpgsqlBatch batch)
         {
 
         }

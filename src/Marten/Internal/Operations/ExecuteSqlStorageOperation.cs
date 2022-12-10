@@ -16,7 +16,7 @@ internal class ExecuteSqlStorageOperation: IStorageOperation, NoDataReturnedCall
 
     public ExecuteSqlStorageOperation(string commandText, params object[] parameterValues)
     {
-        _commandText = commandText.TrimEnd(';');
+        _commandText = commandText;
         _parameterValues = parameterValues;
     }
 

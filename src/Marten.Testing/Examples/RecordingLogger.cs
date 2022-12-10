@@ -14,9 +14,19 @@ public class RecordingLogger: IMartenSessionLogger
         Commands.Add(command);
     }
 
+    public void LogSuccess(NpgsqlBatch batch)
+    {
+        // TODO
+    }
+
     public void LogFailure(NpgsqlCommand command, Exception ex)
     {
         Commands.Add(command);
+    }
+
+    public void LogFailure(NpgsqlBatch batch, Exception ex)
+    {
+        // TODO
     }
 
     public void RecordSavedChanges(IDocumentSession session, IChangeSet commit)
@@ -26,6 +36,9 @@ public class RecordingLogger: IMartenSessionLogger
 
     public void OnBeforeExecute(NpgsqlCommand command)
     {
+    }
 
+    public void OnBeforeExecute(NpgsqlBatch batch)
+    {
     }
 }

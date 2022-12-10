@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 using Marten;
@@ -52,10 +52,17 @@ public class RecordingLogger : IMartenSessionLogger
 
     public void LogSuccess(NpgsqlCommand command)
     {
+    }
 
+    public void LogSuccess(NpgsqlBatch batch)
+    {
     }
 
     public void LogFailure(NpgsqlCommand command, Exception ex)
+    {
+    }
+
+    public void LogFailure(NpgsqlBatch batch, Exception ex)
     {
     }
 
@@ -69,7 +76,10 @@ public class RecordingLogger : IMartenSessionLogger
 
     public void OnBeforeExecute(NpgsqlCommand command)
     {
+    }
 
+    public void OnBeforeExecute(NpgsqlBatch batch)
+    {
     }
 
     public IChangeSet LastCommit { get; set; }

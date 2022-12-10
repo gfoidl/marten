@@ -84,6 +84,25 @@ public partial class QuerySession
         }
     }
 
+    public DbDataReader ExecuteReader(NpgsqlBatch batch)
+    {
+        _connection.Apply(batch);
+
+        RequestCount++;
+
+        try
+        {
+            var returnValue = _retryPolicy.Execute(() => batch.ExecuteReader());
+            Logger.LogSuccess(batch);
+            return returnValue;
+        }
+        catch (Exception e)
+        {
+            handleCommandException(batch, e);
+            throw;
+        }
+    }
+
     public async Task<DbDataReader> ExecuteReaderAsync(NpgsqlCommand command, CancellationToken token = default)
     {
         await _connection.ApplyAsync(command, token).ConfigureAwait(false);
@@ -108,6 +127,30 @@ public partial class QuerySession
         }
     }
 
+    public async Task<DbDataReader> ExecuteReaderAsync(NpgsqlBatch batch, CancellationToken token = default)
+    {
+        await _connection.ApplyAsync(batch, token).ConfigureAwait(false);
+
+        Logger.OnBeforeExecute(batch);
+
+        RequestCount++;
+
+        try
+        {
+            var reader = await _retryPolicy.ExecuteAsync(() => batch.ExecuteReaderAsync(token), token)
+                .ConfigureAwait(false);
+
+            Logger.LogSuccess(batch);
+
+            return reader;
+        }
+        catch (Exception e)
+        {
+            handleCommandException(batch, e);
+            throw;
+        }
+    }
+
     [Obsolete("Replace with ExceptionTransforms from Baseline")]
     private void handleCommandException(NpgsqlCommand cmd, Exception e)
     {
@@ -115,6 +158,15 @@ public partial class QuerySession
         Logger.LogFailure(cmd, e);
 
         MartenExceptionTransformer.WrapAndThrow(cmd, e);
+    }
+
+    [Obsolete("Replace with ExceptionTransforms from Baseline")]
+    private void handleCommandException(NpgsqlBatch batch, Exception e)
+    {
+        this.SafeDispose();
+        Logger.LogFailure(batch, e);
+
+        MartenExceptionTransformer.WrapAndThrow(batch, e);
     }
 
     internal T? LoadOne<T>(NpgsqlCommand command, ISelector<T> selector)
@@ -178,7 +230,9 @@ public interface IConnectionLifetime: IAsyncDisposable, IDisposable
 {
     NpgsqlConnection? Connection { get; }
     void Apply(NpgsqlCommand command);
+    void Apply(NpgsqlBatch batch);
     Task ApplyAsync(NpgsqlCommand command, CancellationToken token);
+    Task ApplyAsync(NpgsqlBatch batch, CancellationToken token);
 
     void Commit();
     Task CommitAsync(CancellationToken token);

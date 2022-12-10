@@ -29,8 +29,8 @@ public class UpdateBatch: IUpdateBatch
         {
             if (_operations.Count < session.Options.UpdateBatchSize)
             {
-                var command = session.BuildCommand(_operations);
-                using var reader = session.ExecuteReader(command);
+                var batch = session.BuildBatch(_operations);
+                using var reader = session.ExecuteReader(batch);
                 ApplyCallbacks(_operations, reader, _exceptions);
             }
             else
@@ -44,8 +44,8 @@ public class UpdateBatch: IUpdateBatch
                         .Take(session.Options.UpdateBatchSize)
                         .ToArray();
 
-                    var command = session.BuildCommand(operations);
-                    using var reader = session.ExecuteReader(command);
+                    var batch = session.BuildBatch(operations);
+                    using var reader = session.ExecuteReader(batch);
                     ApplyCallbacks(operations, reader, _exceptions);
 
                     count += session.Options.UpdateBatchSize;
@@ -66,10 +66,10 @@ public class UpdateBatch: IUpdateBatch
         await session.As<DocumentSessionBase>().BeginTransactionAsync(token).ConfigureAwait(false);
         if (_operations.Count < session.Options.UpdateBatchSize)
         {
-            var command = session.BuildCommand(_operations);
+            var batch = session.BuildBatch(_operations);
             try
             {
-                await using var reader = await session.ExecuteReaderAsync(command, token).ConfigureAwait(false);
+                await using var reader = await session.ExecuteReaderAsync(batch, token).ConfigureAwait(false);
                 await ApplyCallbacksAsync(_operations, reader, _exceptions, token).ConfigureAwait(false);
             }
             catch (Exception e)
@@ -88,11 +88,11 @@ public class UpdateBatch: IUpdateBatch
                     .Take(session.Options.UpdateBatchSize)
                     .ToArray();
 
-                var command = session.BuildCommand(operations);
+                var batch = session.BuildBatch(operations);
                 try
                 {
                     await using var reader =
-                        await session.ExecuteReaderAsync(command, token).ConfigureAwait(false);
+                        await session.ExecuteReaderAsync(batch, token).ConfigureAwait(false);
                     await ApplyCallbacksAsync(operations, reader, _exceptions, token).ConfigureAwait(false);
                 }
                 catch (Exception e)

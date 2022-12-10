@@ -36,6 +36,19 @@ internal static class CommandExtensions
         }
     }
 
+    public static void TrySetTenantId(this IMartenSession session, NpgsqlBatch batch)
+    {
+        if (batch.BatchCommands.Count > 0)
+        {
+            var tenantParameter = batch.BatchCommands[0].Parameters.FirstOrDefault(x => x.ParameterName == TenantIdArgument.ArgName);
+
+            if (tenantParameter != null)
+            {
+                tenantParameter.Value = session.TenantId;
+            }
+        }
+    }
+
     public static NpgsqlCommand BuildCommand(this IMartenSession session, IQueryHandler handler)
     {
         var command = new NpgsqlCommand();
@@ -50,21 +63,28 @@ internal static class CommandExtensions
         return command;
     }
 
-    public static NpgsqlCommand BuildCommand(this IMartenSession session, IEnumerable<IQueryHandler> handlers)
+    public static NpgsqlBatch BuildBatch(this IMartenSession session, IEnumerable<IQueryHandler> handlers)
     {
-        var command = new NpgsqlCommand();
-        var builder = new CommandBuilder(command);
+        var batch = new NpgsqlBatch();
 
         foreach (var handler in handlers)
         {
+            // TODO: reset command
+            var command = new NpgsqlCommand();
+            var builder = new CommandBuilder(command);
             handler.ConfigureCommand(builder, session);
-            builder.Append(";");
+
+            var batchCommand = new NpgsqlBatchCommand(builder.ToString());
+            foreach (var parameter in command.Parameters)
+            {
+                batchCommand.Parameters.Add(parameter);
+            }
+
+            batch.BatchCommands.Add(batchCommand);
         }
 
-        command.CommandText = builder.ToString();
+        session.TrySetTenantId(batch);
 
-        session.TrySetTenantId(command);
-
-        return command;
+        return batch;
     }
 }
