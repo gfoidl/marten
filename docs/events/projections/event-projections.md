@@ -102,6 +102,8 @@ The `Create()` method needs to return either:
 * The document to be created
 * Or `Task<T>` where the `T` is the document that is going to be created in this projection
 
+Note: `Transform` is a synonym to `Create`. Both are equivalent.
+
 ## Project() Method Convention
 
 The `Project()` methods can accept these arguments:
