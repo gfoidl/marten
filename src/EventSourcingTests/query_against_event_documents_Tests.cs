@@ -94,6 +94,32 @@ public class query_against_event_documents_Tests: OneOffConfigurationsContext
     }
 
     [Fact]
+    public void can_project_event_id_guid()
+    {
+        var id = Guid.NewGuid();
+        theSession.Events.Append(id, new QuestEnded { Id = id });
+
+        theSession.SaveChanges();
+
+        theSession.Events.QueryRawEventDataOnly<QuestEnded>().Select(e => e.Id).ToList()
+            .ShouldHaveSingleItem();
+    }
+
+    [Fact]
+    public void can_project_event_id_string()
+    {
+        StoreOptions(_ => _.Events.StreamIdentity = Marten.Events.StreamIdentity.AsString);
+
+        var id = "foo";
+        theSession.Events.Append(id, new StringIdEvent(id));
+
+        theSession.SaveChanges();
+
+        theSession.Events.QueryRawEventDataOnly<StringIdEvent>().Select(e => e.Id).ToList()
+            .ShouldHaveSingleItem();
+    }
+
+    [Fact]
     public void will_not_blow_up_if_searching_for_events_before_event_store_is_warmed_up()
     {
         theSession.Events.QueryRawEventDataOnly<MembersJoined>().Any().ShouldBeFalse();

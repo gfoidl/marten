@@ -181,3 +181,5 @@ public class ImmutableEvent2
         Name = name;
     }
 }
+
+public record StringIdEvent(string Id);

@@ -305,7 +305,7 @@ public void example_of_querying_for_event_data(IDocumentSession session, Guid st
         .ToList();
 }
 ```
-<sup><a href='https://github.com/JasperFx/marten/blob/master/src/EventSourcingTests/query_against_event_documents_Tests.cs#L148-L157' title='Snippet source file'>snippet source</a> | <a href='#snippet-sample_example_of_querying_for_event_data' title='Start of snippet'>anchor</a></sup>
+<sup><a href='https://github.com/JasperFx/marten/blob/master/src/EventSourcingTests/query_against_event_documents_Tests.cs#L174-L183' title='Snippet source file'>snippet source</a> | <a href='#snippet-sample_example_of_querying_for_event_data' title='Start of snippet'>anchor</a></sup>
 <!-- endSnippet -->
 
 This mechanism will allow you to query by any property of the `IEvent` interface shown above.
