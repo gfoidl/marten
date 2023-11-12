@@ -102,7 +102,7 @@ public class query_against_event_documents_Tests: OneOffConfigurationsContext
         theSession.SaveChanges();
 
         theSession.Events.QueryRawEventDataOnly<QuestEnded>().Select(e => e.Id).ToList()
-            .ShouldHaveSingleItem();
+            .ShouldHaveTheSameElementsAs(id);
     }
 
     [Fact]
@@ -116,7 +116,7 @@ public class query_against_event_documents_Tests: OneOffConfigurationsContext
         theSession.SaveChanges();
 
         theSession.Events.QueryRawEventDataOnly<StringIdEvent>().Select(e => e.Id).ToList()
-            .ShouldHaveSingleItem();
+            .ShouldHaveTheSameElementsAs(id);
     }
 
     [Fact]
